@@ -3,6 +3,10 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const colors = require("colors");
 const connectDb = require("./config/connectDb");
+//router object
+const router = express.Router();
+
+const userRoutes = require("./routes/userRoute");
 // config dot env file
 dotenv.config();
 
@@ -27,6 +31,13 @@ app.use("/api/v1/transactions", require("./routes/transactionRoutes"));
 app.use("/api/v1/password-reset", require("./routes/passwordReset"));
 //password reset routes
 app.use("/api/v1/auth", require("./routes/auth"));
+
+//routers
+// POST || LOGIN USER
+router.post("/login", userRoutes);
+
+//POST || REGISTER USER
+router.post("/register", userRoutes);
 
 //port
 const PORT = 8080 || process.env.PORT;
