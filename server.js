@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const morgan = require("morgan");
 const dotenv = require("dotenv");
 const colors = require("colors");
 const connectDb = require("./config/connectDb");
@@ -19,16 +18,15 @@ app.use(express.json());
 app.use(cors("*"));
 
 //routes
+
 //user routes
 app.use("/api/v1/users", require("./routes/userRoute"));
 //transactions routes
 app.use("/api/v1/transactions", require("./routes/transactionRoutes"));
-//static files
-// app.use(express.static(path.resolve(__dirname, "../build")));
-
-// app.get("*", function(req,res){
-//   res.sendFile(path.resolve(__dirname,"../build","/index.html"));
-// });
+//forgot password routes
+app.use("/api/v1/password-reset", require("./routes/passwordReset"));
+//password reset routes
+app.use("/api/v1/auth", require("./routes/auth"));
 
 //port
 const PORT = 8080 || process.env.PORT;
