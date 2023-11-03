@@ -1,43 +1,48 @@
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
-const Joi = require("joi");
-const passwordComplexity = require("joi-password-complexity");
+const { isEmail } = require("validator"); // For email validation
+const bcrypt = require("../utils/bcrypt");
 
-//schema design
-const userSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: [true, "name is required"],
-    },
-    email: {
-      type: String,
-      required: [true, "email is required and should be unique"],
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: [true, "password is required"],
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    minlength: 3,
+    maxlength: 50,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6, // You can adjust the minimum password length
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    validate: {
+      validator: isEmail, // Validate email using the 'validator' library
+      message: "Invalid email format",
     },
   },
-  { timestamps: true }
-);
-userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, process.env.JWTPRIVATEKEY, {
-    expiresIn: "10m",
-  });
-  return token;
+  resetToken: String,
+  resetTokenExpiration: Date,
+});
+
+// Hash the password before saving
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hashPassword(this.password);
+  }
+  next();
+});
+
+// Generate and store a reset token
+userSchema.methods.generateResetToken = async function () {
+  this.resetToken = crypto.randomBytes(20).toString("hex");
+  this.resetTokenExpiration = Date.now() + 3600000; // Token expires in 1 hour
+  return this.resetToken;
 };
 
-//export
-const userModel = mongoose.model("users", userSchema);
-
-const validate = (data) => {
-  const schema = Joi.object({
-    userName: Joi.string().required().label("User Name"),
-    email: Joi.string().email().required().label("Email"),
-    password: passwordComplexity().required().label("Password"),
-  });
-  return schema.validate(data);
-};
-module.exports = { userModel, validate };
+module.exports = mongoose.model("User", userSchema);

@@ -1,12 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const colors = require("colors");
+const bodyParser = require("body-parser");
 const connectDb = require("./config/connectDb");
-//router object
-const router = express.Router();
 
-const userRoutes = require("./routes/userRoute");
 // config dot env file
 dotenv.config();
 
@@ -17,27 +14,15 @@ connectDb();
 const app = express();
 
 //middlewares
-// app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors("*"));
 
+app.use(bodyParser.json());
+
 //routes
-
-//user routes
-app.use("/api/v1/users", require("./routes/userRoute"));
-//transactions routes
+app.use("api/v1/users", require("./routes/userRoute"));
+//transections routes
 app.use("/api/v1/transactions", require("./routes/transactionRoutes"));
-//forgot password routes
-app.use("/api/v1/password-reset", require("./routes/passwordReset"));
-//password reset routes
-app.use("/api/v1/auth", require("./routes/auth"));
-
-//routers
-// POST || LOGIN USER
-router.post("/login", userRoutes);
-
-//POST || REGISTER USER
-router.post("/register", userRoutes);
 
 //port
 const PORT = 8080 || process.env.PORT;
