@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const { isEmail } = require("validator"); // For email validation
-const bcrypt = require("../utils/bcrypt");
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -26,29 +25,6 @@ const userSchema = new mongoose.Schema({
       message: "Invalid email format",
     },
   },
-  isEmailVerified: {
-    type: Boolean,
-    default: false, // Set to true when email is verified
-  },
-  resetToken: String,
-  resetTokenExpiration: Date,
-  emailVerificationToken: String,
-  emailVerificationTokenExpiration: Date,
 });
-
-// Hash the password before saving
-userSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    this.password = await bcrypt.hashPassword(this.password);
-  }
-  next();
-});
-
-// Generate and store a reset token
-userSchema.methods.generateResetToken = async function () {
-  this.resetToken = crypto.randomBytes(20).toString("hex");
-  this.resetTokenExpiration = Date.now() + 3600000; // Token expires in 1 hour
-  return this.resetToken;
-};
 
 module.exports = mongoose.model("User", userSchema);
