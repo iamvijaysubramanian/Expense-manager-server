@@ -26,8 +26,14 @@ const userSchema = new mongoose.Schema({
       message: "Invalid email format",
     },
   },
+  isEmailVerified: {
+    type: Boolean,
+    default: false, // Set to true when email is verified
+  },
   resetToken: String,
   resetTokenExpiration: Date,
+  emailVerificationToken: String,
+  emailVerificationTokenExpiration: Date,
 });
 
 // Hash the password before saving
