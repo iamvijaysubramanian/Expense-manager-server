@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const bodyParser = require("body-parser");
 const connectDb = require("./config/connectDb");
 
 // config dot env file
@@ -16,8 +15,6 @@ const app = express();
 //middlewares
 app.use(express.json());
 app.use(cors("*"));
-
-app.use(bodyParser.json());
 
 //routes
 app.use("api/v1/users", require("./routes/userRoute"));
