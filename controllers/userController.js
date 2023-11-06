@@ -30,10 +30,13 @@ const registerController = async (req, res) => {
       newUser,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      error,
-    });
+    if (error.name === "ValidationError" && error.errors.password) {
+      // Password validation error
+      const errorMessage = error.errors.password.message;
+      return res.status(400).json({ error: errorMessage });
+    } else {
+      return res.status(500).json({ error: "Internal server error" });
+    }
   }
 };
 
