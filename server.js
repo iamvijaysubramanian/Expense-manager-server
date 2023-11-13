@@ -20,7 +20,7 @@ app.use(cors("*"));
 
 //routes
 //user routes
-app.use("/api/v1/users", require("./routes/userRoute"));
+app.use("/api/v1/user", require("./routes/userRoute"));
 //transections routes
 app.use("/api/v1/transactions", require("./routes/transactionRoutes"));
 
