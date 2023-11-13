@@ -117,7 +117,14 @@ const forgotPasswordController = async (req, res) => {
 
 const resetPasswordController = async (req, res) => {
   try {
-    const { resetToken, newPassword } = req.body;
+    const { resetToken, newPassword, confirmPassword } = req.body;
+    // Check if newPassword and confirmPassword match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match",
+      });
+    }
     const user = await userModel.findOne({
       resetPasswordToken: resetToken,
       resetPasswordExpires: { $gt: Date.now() },
